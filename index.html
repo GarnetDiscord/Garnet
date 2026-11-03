@@ -1,1 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
 
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Garnet – bot engine</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;700;800&family=Source+Sans+3:wght@400;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F4EEEF;
+      --surface: #FFFFFF;
+      --ink: #2B2326;
+      --muted: #6E6064;
+      --garnet: #8E1B30;
+      --garnet-hi: #B13049;
+      --line: #E0D2D5;
+      --on-garnet: #FFF;
+      --code-bg: #2B2326;
+      --code-ink: #F4E6E9;
+      box-sizing: border-box;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    @media (prefers-color-scheme:dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #1C1316;
+        --surface: #271B1F;
+        --ink: #F2E7EA;
+        --muted: #B49CA2;
+        --garnet: #D2455E;
+        --garnet-hi: #E4647A;
+        --line: #3B2A30;
+        --on-garnet: #1C1316;
+        --code-bg: #120C0E;
+        --code-ink: #F4E6E9
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #1C1316;
+      --surface: #271B1F;
+      --ink: #F2E7EA;
+      --muted: #B49CA2;
+      --garnet: #D2455E;
+      --garnet-hi: #E4647A;
+      --line: #3B2A30;
+      --on-garnet: #1C1316;
+      --code-bg: #120C0E;
+      --code-ink: #F4E6E9
+    }
+
+    html {
+      scroll-padding-top: env(safe-area-inset-top, 0px)
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font: 400 1.0625rem/1.6 "Source Sans 3", system-ui, sans-serif
+    }
+
+    main {
+      max-width: 64rem;
+      margin: 0 auto;
+      padding: 2.5rem 1.25rem 4rem
+    }
+
+    h1,
+    h2 {
+      font-family: "Bricolage Grotesque", system-ui, sans-serif;
+      line-height: 1.05;
+      margin: 0
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      gap: .6rem;
+      font: 700 1.25rem "Bricolage Grotesque", sans-serif;
+      margin-bottom: 3rem
+    }
+
+    .top svg {
+      width: 1.6rem;
+      height: 1.6rem
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1.2fr .8fr;
+      gap: 2.5rem;
+      align-items: center
+    }
+
+    h1 {
+      font-size: clamp(2.6rem, 7vw, 4.75rem);
+      font-weight: 800;
+      letter-spacing: -.02em
+    }
+
+    .lede {
+      max-width: 34rem;
+      color: var(--muted);
+      margin: 1.25rem 0 2rem;
+      font-size: 1.2rem
+    }
+
+    .gem {
+      width: 100%;
+      max-width: 19rem;
+      justify-self: center
+    }
+
+    .gem .f1 {
+      fill: var(--garnet)
+    }
+
+    .gem .f2 {
+      fill: var(--garnet-hi)
+    }
+
+    .gem .f3 {
+      fill: #5E1020
+    }
+
+    .gem .f4 {
+      fill: #C85A70
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .6rem;
+      background: var(--garnet);
+      color: var(--on-garnet);
+      font: 700 1.1rem "Bricolage Grotesque", sans-serif;
+      padding: .9rem 1.6rem;
+      border-radius: .4rem;
+      text-decoration: none;
+      border: 0;
+      cursor: pointer
+    }
+
+    .btn:hover {
+      background: var(--garnet-hi)
+    }
+
+    .btn:focus-visible,
+    .copy:focus-visible {
+      outline: 3px solid var(--ink);
+      outline-offset: 3px
+    }
+
+    .btn[aria-disabled="true"] {
+      opacity: .55;
+      pointer-events: none
+    }
+
+    .meta {
+      margin: .9rem 0 0;
+      color: var(--muted);
+      font-size: .95rem
+    }
+
+    section {
+      margin-top: 4rem;
+      border-top: 1px solid var(--line);
+      padding-top: 2rem
+    }
+
+    h2 {
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 1rem
+    }
+
+    p {
+      max-width: 40rem
+    }
+
+    .code {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      background: var(--code-bg);
+      color: var(--code-ink);
+      border-radius: .4rem;
+      padding: .9rem 1rem;
+      max-width: 40rem;
+      font: .98rem ui-monospace, Menlo, Consolas, monospace;
+      overflow-x: auto
+    }
+
+    .copy {
+      background: transparent;
+      color: var(--code-ink);
+      border: 1px solid #6E5A60;
+      border-radius: .3rem;
+      padding: .3rem .7rem;
+      font: 600 .85rem "Source Sans 3", sans-serif;
+      cursor: pointer;
+      flex: none
+    }
+
+    dl {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: .5rem 2rem;
+      margin: 0;
+      max-width: 40rem
+    }
+
+    dt {
+      font-weight: 600
+    }
+
+    dd {
+      margin: 0;
+      color: var(--muted)
+    }
+
+    .tbd {
+      color: var(--muted);
+      font-style: italic
+    }
+
+    footer {
+      margin-top: 4rem;
+      color: var(--muted);
+      font-size: .95rem
+    }
+
+    @media (max-width:700px) {
+      .hero {
+        grid-template-columns: 1fr
+      }
+
+      .gem {
+        max-width: 11rem;
+        order: -1;
+        justify-self: start
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="top">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <polygon points="50,6 90,36 50,94 10,36" fill="var(--garnet)" />
+        <polygon points="50,6 90,36 50,40 10,36" fill="var(--garnet-hi)" />
+      </svg>
+      Garnet
+    </div>
+
+    <div class="hero">
+      <div>
+        <h1>The bot engine, in one .jar.</h1>
+        <p class="lede">Download Garnet, drop the file into your project, and start building your bot.</p>
+        <a class="btn" id="dl" href="#" target="_blank" rel="noopener" aria-disabled="true">Download main.jar</a>
+        <p class="meta" id="meta">Version alpha_v1.0.0 · Requires Java 21 or newer</p>
+      </div>
+      <svg class="gem" viewBox="0 0 200 200" role="img" aria-label="A faceted garnet gemstone">
+        <polygon class="f2" points="100,10 160,40 100,70 40,40" />
+        <polygon class="f4" points="160,40 190,85 150,95 100,70" />
+        <polygon class="f1" points="40,40 100,70 50,95 10,85" />
+        <polygon class="f1" points="100,70 150,95 100,190 50,95" />
+        <polygon class="f3" points="150,95 190,85 100,190" />
+        <polygon class="f3" points="50,95 10,85 100,190" />
+      </svg>
+    </div>
+
+    <section id="run">
+      <h2>Run it</h2>
+      <p>Download the file, then start it from a terminal in the same folder.</p>
+      <div class="code"><code id="cmd">java -jar main.jar</code><button class="copy" id="copy"
+          type="button">Copy</button></div>
+    </section>
+
+    <section id="details">
+      <h2>Release details</h2>
+      <dl>
+        <dt>Version</dt>
+        <dd>alpha_v1.0.0</dd>
+        <dt>File</dt>
+        <dd>main.jar</dd>
+        <dt>Java</dt>
+        <dd>21 or newer</dd>
+        <dt>Checksum</dt>
+        <dd class="tbd">Add the SHA-256 of the file here</dd>
+      </dl>
+    </section>
+
+    <section id="more">
+      <h2>Other formats</h2>
+      <p>The .jar is the only download for now. Other packages will be listed here when they are available.</p>
+    </section>
+
+    <footer>Garnet</footer>
+  </main>
+  <script>
+    // Set this to the direct URL of your .jar file (for example a GitHub release asset).
+    var JAR_URL = "https://github.com/GarnetDiscordBot/Garnet/releases/latest/download/main.jar";
+    (function () {
+      var dl = document.getElementById("dl");
+      if (JAR_URL) { dl.href = JAR_URL; dl.removeAttribute("aria-disabled"); }
+      else { dl.textContent = "Download link not set yet"; }
+      var b = document.getElementById("copy");
+      b.addEventListener("click", function () {
+        var t = document.getElementById("cmd").textContent;
+        try {
+          navigator.clipboard.writeText(t).then(function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = "Copy"; }, 1500); }, function () { b.textContent = "Select and copy"; });
+        } catch (e) { b.textContent = "Select and copy"; }
+      });
+    })();
+  </script>
+</body>
+
+</html>
